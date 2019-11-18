@@ -6,7 +6,8 @@ import {
   getSelectedStatus,
   getAll,
   getLoadedStatus,
-  getError
+  getError,
+  getActiveQuizzes
 } from "./quiz-selectors";
 import {
   GetAll,
@@ -15,7 +16,9 @@ import {
   Update,
   DeleteQuestion,
   UpdateQuestion,
-  GetSuccess
+  GetSuccess,
+  TakenByUser,
+  GetQuizAnswersFromUser
 } from "./quizzes.actions";
 import { User } from "../models/user";
 import { Quiz } from "../models/quiz";
@@ -24,6 +27,7 @@ import { Question } from "../models/question";
 @Injectable({ providedIn: "root" })
 export class QuizFacade {
   public all$ = this.store.select(getAll);
+  public activeQuizzes$ = this.store.select(getActiveQuizzes);
   public loadedStatus$ = this.store.select(getLoadedStatus);
   public selected$ = this.store.select(getSelected);
   public selectedStatus$ = this.store.select(getSelectedStatus);
@@ -43,12 +47,16 @@ export class QuizFacade {
     this.store.dispatch(new Get(quizId));
   }
 
-  public cleanSelected() {
-    this.store.dispatch(new GetSuccess(null));
+  public takenByUser(quizUid, user) {
+    this.store.dispatch(new TakenByUser({ quizUid, user }));
   }
 
   public update(quizUid: string, quizData: Quiz) {
     this.store.dispatch(new Update({ quizUid, quizData }));
+  }
+
+  public cleanSelected() {
+    this.store.dispatch(new GetSuccess(null));
   }
 
   public updateQuestion(quizUid: string, questionUid: string, data: Question) {
@@ -57,5 +65,9 @@ export class QuizFacade {
 
   public deleteQuestion(quizUid: string, questionUid: string) {
     this.store.dispatch(new DeleteQuestion({ quizUid, questionUid }));
+  }
+
+  public getQuizAnswersFromUser(quizId: string, userUid: string) {
+    this.store.dispatch(new GetQuizAnswersFromUser({ quizId, userUid }));
   }
 }

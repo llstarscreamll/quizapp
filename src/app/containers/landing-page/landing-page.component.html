@@ -64,7 +64,30 @@
       Sig in to start
     </button>
 
-    <div *ngIf="loggedIn$ | async" class="import-quiz-from-csv">
+    <div *ngIf="loggedIn$ | async">
+      <div class="mb-5 mt-6">
+        <a
+          *ngFor="let quiz of activeQuizzes$ | async"
+          [routerLink]="['quizzes', quiz.uid, 'take']"
+          class="block w-4/5 md:w-3/5 m-auto p-3 bg-blue-500 hover:bg-blue-400 shadow-md rounded-lg m-3 font-light text-white"
+        >
+          <div class="font-semibold text-lg">{{ quiz.name }}</div>
+
+          Open from
+          <small class="font-hairline text-white">
+            {{ quiz.startsAt | date: "shortTime" }}
+          </small>
+          to
+          <small class="font-hairline text-white">
+            {{ quiz.endsAt | date: "shortTime" }}
+          </small>
+        </a>
+      </div>
+
+      <div *ngIf="(activeQuizzes$ | async)?.length === 0">
+        Active quizzes would appear here
+      </div>
+
       <a
         *ngIf="isAdmin$ | async"
         [routerLink]="['quizzes']"

@@ -5,6 +5,9 @@ export class Quiz {
   uid?: string;
   name: string;
   questions: Question[];
+  applicants: User[];
+  startsAt?: Date;
+  endsAt?: Date;
   createdBy?: User;
   user?: any;
 
@@ -15,13 +18,20 @@ export class Quiz {
   public static fromJson(data): Quiz {
     return Object.assign(new Quiz(), {
       ...data,
+      startsAt: new Date(data.startsAt || "1989-06-24: 00:00:00"),
+      endsAt: new Date(data.endsAt || "1989-06-24 23:59:59"),
       questions: Question.fromJsonList(
         Object.keys(data.questions).reduce((acc, key) => {
           acc.push({ uid: key, ...data.questions[key] });
 
           return acc;
         }, [])
-      )
+      ),
+      applicants: Object.keys(data.applicants || {}).reduce((acc, key) => {
+        acc.push({ uid: key, ...data.applicants[key] });
+
+        return acc;
+      }, [])
     });
   }
 

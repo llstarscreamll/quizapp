@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { switchMap, map, tap } from "rxjs/operators";
+import { switchMap, map, tap, take } from "rxjs/operators";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 
 import { QuizService } from "../services/quiz.service";
@@ -15,7 +15,11 @@ import {
   DeleteQuestion,
   DeleteQuestionSuccess,
   UpdateQuestion,
-  UpdateQuestionSuccess
+  UpdateQuestionSuccess,
+  TakenByUser,
+  TakenByUserSuccess,
+  GetQuizAnswersFromUser,
+  GetQuizAnswersFromUserSuccess
 } from "./quizzes.actions";
 
 @Injectable()
@@ -35,6 +39,29 @@ export class QuizEffects {
       this.quizService
         .get(action.payload)
         .pipe(map(quiz => new GetSuccess(quiz)))
+    )
+  );
+
+  @Effect()
+  public getQuizAnswersFromUser$ = this.actions$.pipe(
+    ofType(QuizActionTypes.GetQuizAnswersFromUser),
+    switchMap((action: GetQuizAnswersFromUser) =>
+      this.quizService
+        .getQuizAnswersFromUser(action.payload.quizId, action.payload.userUid)
+        .pipe(
+          take(1),
+          map(quiz => new GetQuizAnswersFromUserSuccess(quiz))
+        )
+    )
+  );
+
+  @Effect()
+  public takenByUser$ = this.actions$.pipe(
+    ofType(QuizActionTypes.TakenByUser),
+    switchMap((action: TakenByUser) =>
+      this.quizService
+        .userHasTakenQuiz(action.payload.quizUid, action.payload.user)
+        .pipe(map(_ => new TakenByUserSuccess()))
     )
   );
 

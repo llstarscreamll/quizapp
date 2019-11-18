@@ -15,6 +15,14 @@ export const getAll = createSelector(
   selectQuizStatue,
   (state: QuizState) => state.loaded
 );
+export const getActiveQuizzes = createSelector(
+  selectQuizStatue,
+  (state: QuizState) =>
+    state.loaded.filter(quiz => {
+      const now = new Date();
+      return now > quiz.startsAt && now < quiz.endsAt;
+    })
+);
 export const getLoadedStatus = createSelector(
   selectQuizStatue,
   (state: QuizState) => state.loadedStatus

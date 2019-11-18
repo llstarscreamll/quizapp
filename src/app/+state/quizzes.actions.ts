@@ -14,6 +14,14 @@ export enum QuizActionTypes {
   GetSuccess = "[Quiz] get success",
   GetError = "[Quiz] get error",
 
+  GetQuizAnswersFromUser = "[Quiz] get quiz answers from user",
+  GetQuizAnswersFromUserSuccess = "[Quiz] get quiz answers from user success",
+  GetQuizAnswersFromUserError = "[Quiz] get quiz answers from user error",
+
+  TakenByUser = "[Quiz] taken by user",
+  TakenByUserSuccess = "[Quiz] taken by user success",
+  TakenByUserError = "[Quiz] taken by user error",
+
   Update = "[Quiz] update",
   UpdateSuccess = "[Quiz] update success",
   UpdateError = "[Quiz] update error",
@@ -60,6 +68,35 @@ export class GetSuccess implements Action {
 
 export class GetError implements Action {
   public readonly type = QuizActionTypes.GetError;
+  public constructor(public payload: Error) {}
+}
+
+export class GetQuizAnswersFromUser implements Action {
+  public readonly type = QuizActionTypes.GetQuizAnswersFromUser;
+  public constructor(public payload: { quizId: string; userUid: string }) {}
+}
+
+export class GetQuizAnswersFromUserSuccess implements Action {
+  public readonly type = QuizActionTypes.GetQuizAnswersFromUserSuccess;
+  public constructor(public payload: any) {}
+}
+
+export class GetQuizAnswersFromUserError implements Action {
+  public readonly type = QuizActionTypes.GetQuizAnswersFromUserError;
+  public constructor(public payload: Error) {}
+}
+
+export class TakenByUser implements Action {
+  public readonly type = QuizActionTypes.TakenByUser;
+  public constructor(public payload: any) {}
+}
+
+export class TakenByUserSuccess implements Action {
+  public readonly type = QuizActionTypes.TakenByUserSuccess;
+}
+
+export class TakenByUserError implements Action {
+  public readonly type = QuizActionTypes.TakenByUserError;
   public constructor(public payload: Error) {}
 }
 
@@ -134,6 +171,12 @@ export type QuizAction =
   | Get
   | GetSuccess
   | GetError
+  | GetQuizAnswersFromUser
+  | GetQuizAnswersFromUserSuccess
+  | GetQuizAnswersFromUserError
+  | TakenByUser
+  | TakenByUserSuccess
+  | TakenByUserError
   | Update
   | UpdateSuccess
   | UpdateError
@@ -151,6 +194,12 @@ export const fromQuizActions = {
   Get,
   GetSuccess,
   GetError,
+  GetQuizAnswersFromUser,
+  GetQuizAnswersFromUserSuccess,
+  GetQuizAnswersFromUserError,
+  TakenByUser,
+  TakenByUserSuccess,
+  TakenByUserError,
   Update,
   UpdateSuccess,
   UpdateError,

@@ -46,6 +46,23 @@ export class QuizService {
       .pipe(map((rawQuiz: Quiz) => Quiz.fromJson(rawQuiz)));
   }
 
+  public getQuizAnswersFromUser(
+    quizUid: string,
+    userUid: string
+  ): Observable<any> {
+    return this.db
+      .doc<any>(`user_quiz_answers/${userUid}-${quizUid}`)
+      .valueChanges();
+  }
+
+  public userHasTakenQuiz(quizUid: string, user: any) {
+    return of(
+      this.db.doc(`quizzes/${quizUid}`).update({
+        [`applicants.${user.uid}`]: { ...user, takenAt: new Date() }
+      })
+    );
+  }
+
   public update(uid: string, data: any) {
     return of(this.db.doc(`quizzes/${uid}`).update(data));
   }
@@ -108,7 +125,7 @@ export class QuizService {
       }
     );
 
-    uid = `${index}-` + btoa(uid);
+    uid = `${index}-` + btoa(uid).replace(/[\~\*\/\[\]]/gi, "");
 
     return {
       uid,

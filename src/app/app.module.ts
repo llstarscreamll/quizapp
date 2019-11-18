@@ -23,6 +23,7 @@ import { environment } from "src/environments/environment";
 import { EditQuizPageComponent } from "./containers/edit-quiz-page/edit-quiz-page.component";
 import { QuizzesPageComponent } from "./containers/quizzes-page/quizzes.component";
 import { LandingPageComponent } from "./containers/landing-page/landing-page.component";
+import { TakeQuizPageComponent } from "./containers/take-quiz-page/take-quiz-page.component";
 
 @NgModule({
   imports: [
@@ -62,7 +63,8 @@ import { LandingPageComponent } from "./containers/landing-page/landing-page.com
     AppComponent,
     LandingPageComponent,
     QuizzesPageComponent,
-    EditQuizPageComponent
+    EditQuizPageComponent,
+    TakeQuizPageComponent
   ],
   bootstrap: [AppComponent]
 })
