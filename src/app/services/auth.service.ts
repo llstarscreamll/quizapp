@@ -1,11 +1,11 @@
-import { from } from "rxjs";
+import { from, of } from "rxjs";
+import { Observable } from "rxjs";
 import { auth } from "firebase/app";
 import { Injectable } from "@angular/core";
+import { distinctUntilChanged, map, tap } from "rxjs/operators";
 
-import { AngularFireAuth } from "@angular/fire/auth";
-import { Observable } from "rxjs";
 import { UserService } from "./user.service";
-import { tap, switchMap } from "rxjs/operators";
+import { AngularFireAuth } from "@angular/fire/auth";
 
 @Injectable()
 export class AuthService {
@@ -15,17 +15,33 @@ export class AuthService {
   ) {}
 
   public authenticationState(): Observable<any> {
-    return this.afAuth.authState;
+    return this.afAuth.authState.pipe(
+      distinctUntilChanged(),
+      map(this.mapAuthenticationResponse)
+    );
   }
 
   public loginWithGoogle(): Observable<any> {
     return from(
       this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider())
     ).pipe(
-      switchMap(authenticationResponse =>
-        this.userService.create(authenticationResponse.user)
-      )
+      map(authResponse => (authResponse ? authResponse.user : null)),
+      map(this.mapAuthenticationResponse),
+      tap(user => this.userService.create(user))
     );
+  }
+
+  private mapAuthenticationResponse(response) {
+    return response
+      ? {
+          uid: response.uid,
+          email: response.email,
+          fullName: response.displayName,
+          photoURL: response.photoURL,
+          phoneNumber: response.phoneNumber,
+          emailVerified: response.emailVerified
+        }
+      : null;
   }
 
   public logout() {

@@ -1,26 +1,24 @@
+import { map } from "rxjs/operators";
 import { Observable, from } from "rxjs";
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/firestore";
+import { AngularFirestore, DocumentSnapshot } from "@angular/fire/firestore";
+
+import { User } from "../models/user";
 
 @Injectable()
 export class UserService {
   public constructor(private db: AngularFirestore) {}
 
   public create(user): Observable<any> {
-    const userData = {
-      uid: user.uid,
-      fullName: user.displayName,
-      photoURL: user.photoURL,
-      email: user.email,
-      emailVerified: user.emailVerified,
-      phoneNumber: user.phoneNumber
-    };
-
     return from(
-      this.db
-        .doc(`users/${user.uid}`)
-        .set(userData, { merge: true })
-        .then(_ => userData)
-    );
+      this.db.doc(`users/${user.uid}`).set(user, { merge: true })
+    ).pipe(map(_ => user));
+  }
+
+  public get(uid: string): Observable<User> {
+    return this.db
+      .doc(`users/${uid}`)
+      .get({ source: "server" })
+      .pipe(map((ref: DocumentSnapshot<User>) => ref.data()));
   }
 }

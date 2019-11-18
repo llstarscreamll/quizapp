@@ -1,16 +1,19 @@
-import * as fromRouter from "@ngrx/router-store";
-import { AuthState, AUTH_FEATURE_KEY, authReducer } from "./auth.reducer";
-import { InjectionToken } from "@angular/core";
 import {
   Action,
   ActionReducerMap,
   ActionReducer,
   MetaReducer
 } from "@ngrx/store";
+import { InjectionToken } from "@angular/core";
+import * as fromRouter from "@ngrx/router-store";
+
 import { environment } from "src/environments/environment";
+import { AuthState, AUTH_FEATURE_KEY, authReducer } from "./auth.reducer";
+import { QUIZ_FEATURE_KEY, quizReducer, QuizState } from "./quizzes.reducer";
 
 export interface State {
   [AUTH_FEATURE_KEY]: AuthState;
+  [QUIZ_FEATURE_KEY]: QuizState;
   router: fromRouter.RouterReducerState<any>;
 }
 
@@ -19,6 +22,7 @@ export const ROOT_REDUCERS = new InjectionToken<
 >("Root reducers token", {
   factory: () => ({
     [AUTH_FEATURE_KEY]: authReducer,
+    [QUIZ_FEATURE_KEY]: quizReducer,
     router: fromRouter.routerReducer
   })
 });

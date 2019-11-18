@@ -1,21 +1,37 @@
 import { Action } from "@ngrx/store";
 
 export enum AuthActionTypes {
-  CheckIfAuthenticated = "[Auth] check if authenticated",
+  CheckAuth = "[Auth] check",
+  CheckAuthSuccess = "[Auth] check success",
+  CheckAuthError = "[Auth] check error",
+
   LoginWithGoogle = "[Auth] login with Google",
+
   LoginSuccess = "[Auth] login success",
   LoginError = "[Auth] login error",
+
   GetAuthUser = "[Auth] get user",
   GetAuthUserSuccess = "[Auth] get user success",
   GetAuthUserError = "[Auth] get user error",
+
   Logout = "[Auth] logout",
   LogoutSuccess = "[Auth] logout success",
   CleanErrors = "[Auth] clean errors"
 }
 
-export class CheckIfUserIsAuthenticated {
-  public readonly type = AuthActionTypes.CheckIfAuthenticated;
+export class CheckAuth {
+  public readonly type = AuthActionTypes.CheckAuth;
   public constructor() {}
+}
+
+export class CheckAuthSuccess {
+  public readonly type = AuthActionTypes.CheckAuthSuccess;
+  public constructor(public payload: any) {}
+}
+
+export class CheckAuthError {
+  public readonly type = AuthActionTypes.CheckAuthError;
+  public constructor(public payload: any) {}
 }
 
 export class LoginWithGoogle implements Action {
@@ -64,6 +80,9 @@ export class CleanErrors implements Action {
 }
 
 export type AuthAction =
+  | CheckAuth
+  | CheckAuthSuccess
+  | CheckAuthError
   | LoginWithGoogle
   | LoginSuccess
   | LoginError
@@ -75,6 +94,9 @@ export type AuthAction =
   | CleanErrors;
 
 export const fromAuthActions = {
+  CheckAuth,
+  CheckAuthSuccess,
+  CheckAuthError,
   LoginWithGoogle,
   LoginSuccess,
   LoginError,

@@ -3,3 +3,7 @@
 @tailwind components;
 
 @tailwind utilities;
+
+.answer-option markdown p {
+  display: inline;
+}

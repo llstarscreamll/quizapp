@@ -1,15 +1,11 @@
 import { AuthAction, AuthActionTypes } from "./auth.actions";
+import { AuthStatus } from "../enums/auth-status";
 
 export const AUTH_FEATURE_KEY = "AUTH";
 
 export interface AuthState {
   user: any;
-  status:
-    | "loggingIn"
-    | "loggedIn"
-    | "loginFailed"
-    | "loginError"
-    | "loggingOut";
+  status: AuthStatus;
   errors?: any;
 }
 
@@ -23,17 +19,21 @@ export function authReducer(
   action: AuthAction
 ): AuthState {
   switch (action.type) {
-    case AuthActionTypes.LoginSuccess: {
+    case (AuthActionTypes.LoginSuccess, AuthActionTypes.CheckAuthSuccess): {
       state = {
         ...state,
         user: action.payload,
-        status: "loggedIn"
+        status: AuthStatus.loggedIn
       };
       break;
     }
 
     case AuthActionTypes.LoginError: {
-      state = { ...state, status: "loginError", errors: action.payload };
+      state = {
+        ...state,
+        status: AuthStatus.loginError,
+        errors: action.payload
+      };
       break;
     }
 
@@ -43,7 +43,7 @@ export function authReducer(
     }
 
     case AuthActionTypes.Logout: {
-      state = { ...state, status: "loggingOut" };
+      state = { ...state, status: AuthStatus.loggingOut };
       break;
     }
 
