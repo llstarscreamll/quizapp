@@ -54,4 +54,17 @@ export class Quiz {
       .filter(skill => skill != "")
       .filter((item, index, items) => items.indexOf(item) === index);
   }
+
+  public get timeLeftFromNow(): { minutes; seconds } {
+    const now: Date = new Date();
+    const milliseconds = this.endsAt.getTime() - now.getTime();
+    const seconds = Math.floor(milliseconds / 3600000);
+    const minutes = Math.floor((milliseconds / 3600000) * 60);
+    return { minutes, seconds };
+  }
+
+  public isAvailable(): boolean {
+    const now = new Date();
+    return now > this.startsAt && now < this.endsAt;
+  }
 }

@@ -1,7 +1,11 @@
-import { map } from "rxjs/operators";
+import { map, switchMap, tap } from "rxjs/operators";
 import { Injectable } from "@angular/core";
 import { Observable, from, Subject, of } from "rxjs";
-import { AngularFirestore } from "@angular/fire/firestore";
+import {
+  AngularFirestore,
+  AngularFirestoreDocument,
+  DocumentSnapshot
+} from "@angular/fire/firestore";
 import * as firebase from "firebase/app";
 
 import { Quiz } from "../models/quiz";
@@ -27,6 +31,10 @@ export class QuizService {
 
   public constructor(private papa: Papa, private db: AngularFirestore) {}
 
+  private userQuizAnswersKey(userUid: string, quizUid: string): string {
+    return `user_quiz_answers/${userUid}---${quizUid}`;
+  }
+
   public getAll(): Observable<Quiz[]> {
     return this.db
       .collection<Quiz>(`quizzes`)
@@ -46,16 +54,13 @@ export class QuizService {
       .pipe(map((rawQuiz: Quiz) => Quiz.fromJson(rawQuiz)));
   }
 
-  public getQuizAnswersFromUser(
-    quizUid: string,
-    userUid: string
-  ): Observable<any> {
+  public getUserQuizAnswers(userUid: string, quizUid: string): Observable<any> {
     return this.db
-      .doc<any>(`user_quiz_answers/${userUid}-${quizUid}`)
+      .doc<any>(this.userQuizAnswersKey(userUid, quizUid))
       .valueChanges();
   }
 
-  public userHasTakenQuiz(quizUid: string, user: any) {
+  public setQuizApplicant(quizUid: string, user: any) {
     return of(
       this.db.doc(`quizzes/${quizUid}`).update({
         [`applicants.${user.uid}`]: { ...user, takenAt: new Date() }
@@ -65,6 +70,56 @@ export class QuizService {
 
   public update(uid: string, data: any) {
     return of(this.db.doc(`quizzes/${uid}`).update(data));
+  }
+
+  public setLastUserQuizEntryDate(userUid: string, quizUid: string) {
+    return of(
+      this.db.doc(this.userQuizAnswersKey(userUid, quizUid)).set(
+        {
+          lastEntry: new Date()
+        },
+        { merge: true }
+      )
+    );
+  }
+
+  public setCurrentUserQuizQuestion(
+    userUid: string,
+    quizUid: string,
+    questionUid: string
+  ) {
+    const reference = this.db.doc(this.userQuizAnswersKey(userUid, quizUid));
+
+    return reference.get().pipe(
+      switchMap((doc: DocumentSnapshot<any>) => {
+        return doc.exists
+          ? of(
+              reference.update({
+                ["current.uid"]: questionUid,
+                ["current.startedAt"]: new Date()
+              })
+            )
+          : of(
+              reference.set({
+                current: { uid: questionUid, startedAt: new Date() }
+              })
+            );
+      })
+    );
+  }
+
+  public setQuestionAnswer(
+    userUid: string,
+    quizUid: string,
+    questionUid: string,
+    answer: any
+  ) {
+    return of(
+      this.db.doc(this.userQuizAnswersKey(userUid, quizUid)).update({
+        [`answers.${questionUid}`]: answer,
+        current: firebase.firestore.FieldValue.delete()
+      })
+    );
   }
 
   public updateQuestion(quizUid: string, questionUid: string, data: Question) {
@@ -125,7 +180,7 @@ export class QuizService {
       }
     );
 
-    uid = `${index}-` + btoa(uid).replace(/[\~\*\/\[\]]/gi, "");
+    uid = `${index}-` + btoa(uid).replace(/[\~\*\/\[\]\-]/gi, "");
 
     return {
       uid,

@@ -14,9 +14,9 @@ export enum QuizActionTypes {
   GetSuccess = "[Quiz] get success",
   GetError = "[Quiz] get error",
 
-  GetQuizAnswersFromUser = "[Quiz] get quiz answers from user",
-  GetQuizAnswersFromUserSuccess = "[Quiz] get quiz answers from user success",
-  GetQuizAnswersFromUserError = "[Quiz] get quiz answers from user error",
+  GetUserQuizAnswers = "[Quiz] get user quiz answers",
+  GetUserQuizAnswersSuccess = "[Quiz] get user quiz answers success",
+  GetUserQuizAnswersError = "[Quiz] get user quiz answers error",
 
   TakenByUser = "[Quiz] taken by user",
   TakenByUserSuccess = "[Quiz] taken by user success",
@@ -29,6 +29,15 @@ export enum QuizActionTypes {
   UpdateQuestion = "[Quiz] update question",
   UpdateQuestionSuccess = "[Quiz] update question success",
   UpdateQuestionError = "[Quiz] update question error",
+
+  SetLastUserQuizEntry = "[Quiz] set last user ques entry",
+  SetLastUserQuizEntrySuccess = "[Quiz] set last user ques entry success",
+
+  SetQuestionAnswer = "[Quiz] set question answer",
+  SetQuestionAnswerSuccess = "[Quiz] set question answer success",
+
+  SetCurrentUserQuizQuestion = "[Quiz] set current user quiz question",
+  SetCurrentUserQuizQuestionSuccess = "[Quiz] set current user quiz question success",
 
   DeleteQuestion = "[Quiz] delete question",
   DeleteQuestionSuccess = "[Quiz] delete question success",
@@ -72,17 +81,17 @@ export class GetError implements Action {
 }
 
 export class GetQuizAnswersFromUser implements Action {
-  public readonly type = QuizActionTypes.GetQuizAnswersFromUser;
-  public constructor(public payload: { quizId: string; userUid: string }) {}
+  public readonly type = QuizActionTypes.GetUserQuizAnswers;
+  public constructor(public payload: { userUid: string; quizId: string }) {}
 }
 
 export class GetQuizAnswersFromUserSuccess implements Action {
-  public readonly type = QuizActionTypes.GetQuizAnswersFromUserSuccess;
+  public readonly type = QuizActionTypes.GetUserQuizAnswersSuccess;
   public constructor(public payload: any) {}
 }
 
 export class GetQuizAnswersFromUserError implements Action {
-  public readonly type = QuizActionTypes.GetQuizAnswersFromUserError;
+  public readonly type = QuizActionTypes.GetUserQuizAnswersError;
   public constructor(public payload: Error) {}
 }
 
@@ -130,6 +139,45 @@ export class UpdateQuestionSuccess implements Action {
 export class UpdateQuestionError implements Action {
   public readonly type = QuizActionTypes.UpdateQuestionError;
   public constructor(public payload: Error) {}
+}
+
+export class SetLastUserQuizEntry implements Action {
+  public readonly type = QuizActionTypes.SetLastUserQuizEntry;
+  public constructor(public payload: { userUid: string; quizUid: string }) {}
+}
+
+export class SetLastUserQuizEntrySuccess implements Action {
+  public readonly type = QuizActionTypes.SetLastUserQuizEntrySuccess;
+  public constructor() {}
+}
+
+export class SetQuestionAnswer implements Action {
+  public readonly type = QuizActionTypes.SetQuestionAnswer;
+  public constructor(
+    public payload: {
+      userUid: string;
+      quizUid: string;
+      questionUid: string;
+      answer: any;
+    }
+  ) {}
+}
+
+export class SetQuestionAnswerSuccess implements Action {
+  public readonly type = QuizActionTypes.SetQuestionAnswerSuccess;
+  public constructor() {}
+}
+
+export class SetCurrentUserQuizQuestion implements Action {
+  public readonly type = QuizActionTypes.SetCurrentUserQuizQuestion;
+  public constructor(
+    public payload: { userUid: string; quizUid: string; questionUid: string }
+  ) {}
+}
+
+export class SetCurrentUserQuizQuestionSuccess implements Action {
+  public readonly type = QuizActionTypes.SetCurrentUserQuizQuestionSuccess;
+  public constructor() {}
 }
 
 export class DeleteQuestion implements Action {
@@ -180,6 +228,10 @@ export type QuizAction =
   | Update
   | UpdateSuccess
   | UpdateError
+  | SetLastUserQuizEntry
+  | SetLastUserQuizEntrySuccess
+  | SetQuestionAnswer
+  | SetQuestionAnswerSuccess
   | DeleteQuestion
   | DeleteQuestionSuccess
   | DeleteQuestionError
@@ -203,6 +255,10 @@ export const fromQuizActions = {
   Update,
   UpdateSuccess,
   UpdateError,
+  SetLastUserQuizEntry,
+  SetLastUserQuizEntrySuccess,
+  SetQuestionAnswer,
+  SetQuestionAnswerSuccess,
   DeleteQuestion,
   DeleteQuestionSuccess,
   DeleteQuestionError,

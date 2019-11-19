@@ -7,7 +7,8 @@ import {
   getAll,
   getLoadedStatus,
   getError,
-  getActiveQuizzes
+  getActiveQuizzes,
+  getUserQuizAnswers
 } from "./quiz-selectors";
 import {
   GetAll,
@@ -18,7 +19,10 @@ import {
   UpdateQuestion,
   GetSuccess,
   TakenByUser,
-  GetQuizAnswersFromUser
+  GetQuizAnswersFromUser,
+  SetLastUserQuizEntry,
+  SetCurrentUserQuizQuestion,
+  SetQuestionAnswer
 } from "./quizzes.actions";
 import { User } from "../models/user";
 import { Quiz } from "../models/quiz";
@@ -27,11 +31,12 @@ import { Question } from "../models/question";
 @Injectable({ providedIn: "root" })
 export class QuizFacade {
   public all$ = this.store.select(getAll);
-  public activeQuizzes$ = this.store.select(getActiveQuizzes);
-  public loadedStatus$ = this.store.select(getLoadedStatus);
-  public selected$ = this.store.select(getSelected);
-  public selectedStatus$ = this.store.select(getSelectedStatus);
   public error$ = this.store.select(getError);
+  public selected$ = this.store.select(getSelected);
+  public loadedStatus$ = this.store.select(getLoadedStatus);
+  public activeQuizzes$ = this.store.select(getActiveQuizzes);
+  public selectedStatus$ = this.store.select(getSelectedStatus);
+  public userQuizAnswers$ = this.store.select(getUserQuizAnswers);
 
   public constructor(private store: Store<any>) {}
 
@@ -47,7 +52,7 @@ export class QuizFacade {
     this.store.dispatch(new Get(quizId));
   }
 
-  public takenByUser(quizUid, user) {
+  public setQuizApplicant(quizUid, user) {
     this.store.dispatch(new TakenByUser({ quizUid, user }));
   }
 
@@ -67,7 +72,32 @@ export class QuizFacade {
     this.store.dispatch(new DeleteQuestion({ quizUid, questionUid }));
   }
 
-  public getQuizAnswersFromUser(quizId: string, userUid: string) {
-    this.store.dispatch(new GetQuizAnswersFromUser({ quizId, userUid }));
+  public getUserQuizAnswers(userUid: string, quizId: string) {
+    this.store.dispatch(new GetQuizAnswersFromUser({ userUid, quizId }));
+  }
+
+  public setLastUserQuizEntry(userUid: string, quizUid: string) {
+    this.store.dispatch(new SetLastUserQuizEntry({ userUid, quizUid }));
+  }
+
+  public setQuestionAnswer(
+    userUid: string,
+    quizUid: string,
+    questionUid: string,
+    answer: any
+  ) {
+    this.store.dispatch(
+      new SetQuestionAnswer({ userUid, quizUid, questionUid, answer })
+    );
+  }
+
+  public setCurrentUserQuizQuestion(
+    userUid: string,
+    quizUid: string,
+    questionUid: string
+  ) {
+    this.store.dispatch(
+      new SetCurrentUserQuizQuestion({ userUid, quizUid, questionUid })
+    );
   }
 }

@@ -1,1 +1,55 @@
-<p>take-quiz-page works!</p>
+<div
+  *ngIf="!quiz?.isAvailable()"
+  class="bg-yellow-400 text-gray-800 text-2xl font-bold w-2/3 rounded-lg p-5 m-auto text-center shadow"
+>
+  ¡¡Quiz is not active!!
+</div>
+
+<div
+  *ngIf="!currentQuestion && quiz?.isAvailable()"
+  class="text-gray-500 text-2xl text-center font-thin m-10"
+>
+  Loading...
+</div>
+
+<ng-container *ngIf="currentQuestion && quiz.isAvailable()">
+  <div class="rounded-lg py-4 text-gray-800 text-xl">
+    <markdown [data]="currentQuestion?.question" class="block"></markdown>
+  </div>
+
+  <hr class="mb-4" />
+
+  <form [formGroup]="form" (ngSubmit)="setAnswer()" class="options">
+    <label
+      *ngFor="let option of currentAnswerOptions; let i = index"
+      class="block p-4 my-3 bg-white text-gray-700 rounded-lg flex items-center cursor-pointer shadow"
+    >
+      <div>
+        <input
+          formControlName="selectedAnswer"
+          type="radio"
+          name="selectedAnswer"
+          [value]="option"
+        />
+      </div>
+      <markdown [data]="option.name" class="inline flex-grow pl-5"></markdown>
+    </label>
+
+    <button
+      [disabled]="!form.valid"
+      class="mt-4 p-4 text-white text-xl font-bold rounded-lg w-full"
+      [ngClass]="{
+        'cursor-not-allowed': !form.valid,
+        'bg-red-400': !form.valid,
+        'bg-blue-600 ': form.valid,
+        'hover:bg-blue-500': form.valid
+      }"
+    >
+      Next
+    </button>
+  </form>
+
+  <div class="text-thin text-gray-500 text-sm text-center p-4">
+    {{ answeredQuestionsCount }} / {{ quiz?.questions?.length }}
+  </div>
+</ng-container>

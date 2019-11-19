@@ -29,4 +29,33 @@ export class Question {
       { code: "right_answer", name: this.right_answer }
     ];
   }
+
+  public randomAnswerOptions(): any[] {
+    return this.shuffleArr(this.answerOptions());
+  }
+
+  /**
+   * Taken from:
+   * https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+   * @param arr
+   */
+  private shuffleArr(arr: any[]): any[] {
+    let currentIndex = arr.length,
+      temporaryValue,
+      randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = arr[currentIndex];
+      arr[currentIndex] = arr[randomIndex];
+      arr[randomIndex] = temporaryValue;
+    }
+
+    return arr;
+  }
 }

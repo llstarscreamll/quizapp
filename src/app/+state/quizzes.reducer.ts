@@ -10,6 +10,7 @@ export interface QuizState {
   loadedStatus: LoadStatus;
   selected?: Quiz;
   selectedStatus?: LoadStatus;
+  userQuizAnswers?: any;
   errors?: Error;
 }
 
@@ -69,6 +70,14 @@ export function quizReducer(
       state = {
         ...state,
         selectedStatus: LoadStatus.error
+      };
+      break;
+    }
+
+    case QuizActionTypes.GetUserQuizAnswersSuccess: {
+      state = {
+        ...state,
+        userQuizAnswers: action.payload
       };
       break;
     }

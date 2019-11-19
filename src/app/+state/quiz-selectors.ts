@@ -17,15 +17,15 @@ export const getAll = createSelector(
 );
 export const getActiveQuizzes = createSelector(
   selectQuizStatue,
-  (state: QuizState) =>
-    state.loaded.filter(quiz => {
-      const now = new Date();
-      return now > quiz.startsAt && now < quiz.endsAt;
-    })
+  (state: QuizState) => state.loaded.filter(quiz => quiz.isAvailable())
 );
 export const getLoadedStatus = createSelector(
   selectQuizStatue,
   (state: QuizState) => state.loadedStatus
+);
+export const getUserQuizAnswers = createSelector(
+  selectQuizStatue,
+  (state: QuizState) => state.userQuizAnswers
 );
 export const getError = createSelector(
   selectQuizStatue,
