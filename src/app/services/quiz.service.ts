@@ -1,17 +1,30 @@
-import { map, switchMap, tap } from "rxjs/operators";
-import { Injectable } from "@angular/core";
-import { Observable, from, Subject, of } from "rxjs";
-import {
-  AngularFirestore,
-  AngularFirestoreDocument,
-  DocumentSnapshot
-} from "@angular/fire/firestore";
 import * as firebase from "firebase/app";
+import { Injectable } from "@angular/core";
+import { Observable, Subject, of } from "rxjs";
+import { map, switchMap, tap, withLatestFrom, filter } from "rxjs/operators";
+import { AngularFirestore, DocumentSnapshot } from "@angular/fire/firestore";
 
 import { Quiz } from "../models/quiz";
 import { Papa } from "ngx-papaparse";
 import { User } from "../models/user";
 import { Question } from "../models/question";
+import { UserService } from "./user.service";
+import { UserQuizAnswers } from "../models/users-quiz-answers";
+
+export class Answer {
+  answerId: string;
+  answerText: string;
+  points: number;
+  question: string;
+  questionId: string;
+  finishedAt: string;
+  startedAt: string;
+  // the following fields are computed on Firestore Query
+  uid: string;
+  userUid: string;
+  skill: string;
+  seniority: string;
+}
 
 @Injectable()
 export class QuizService {
@@ -29,7 +42,11 @@ export class QuizService {
     "Respuesta 5": "wrong_answer_4"
   };
 
-  public constructor(private papa: Papa, private db: AngularFirestore) {}
+  public constructor(
+    private papa: Papa,
+    private db: AngularFirestore,
+    private userService: UserService
+  ) {}
 
   private userQuizAnswersKey(userUid: string, quizUid: string): string {
     return `user_quiz_answers/${userUid}---${quizUid}`;
@@ -52,6 +69,82 @@ export class QuizService {
       .doc<Quiz>(`quizzes/${uid}`)
       .valueChanges()
       .pipe(map((rawQuiz: Quiz) => Quiz.fromJson(rawQuiz)));
+  }
+
+  public getWithMetrics(quizUid: string): Observable<Quiz> {
+    return this.db
+      .doc<Quiz>(`quizzes/${quizUid}`)
+      .valueChanges()
+      .pipe(
+        withLatestFrom(
+          this.getQuizResponses(quizUid),
+          this.userService.getAll()
+        ),
+        filter(
+          ([rawQuiz, arrAnswers, users]: [Quiz, UserQuizAnswers[], User[]]) =>
+            !!arrAnswers && !!users
+        ),
+        tap(console.log),
+        map(
+          ([rawQuiz, arrAnswers, users]: [Quiz, UserQuizAnswers[], User[]]) => {
+            const quiz = Quiz.fromJson(rawQuiz);
+
+            quiz.usersAnswers = arrAnswers
+              .map(userAnswer => ({
+                ...userAnswer,
+                user: users.find(u => u.uid === userAnswer.userUid)
+              }))
+              .map(userAnswer => {
+                userAnswer.arrAnswers = userAnswer.arrAnswers.map(answer => {
+                  const question = quiz.questions.find(
+                    q => q.uid === answer.questionId
+                  );
+
+                  return {
+                    ...answer,
+                    skill: question.skill,
+                    seniority: question.seniority
+                  };
+                });
+
+                return userAnswer;
+              });
+
+            return quiz;
+          }
+        )
+      );
+  }
+
+  private getQuizResponses(quizUid: string): Observable<any[]> {
+    return this.db
+      .collection<UserQuizAnswers>(`user_quiz_answers`)
+      .valueChanges({ idField: "uid" })
+      .pipe(
+        map(data =>
+          data
+            .filter(row => row.uid.includes(quizUid))
+            .map(row => {
+              const [userUid] = row.uid.split("---");
+              row.userUid = userUid;
+              row.quizUid = quizUid;
+
+              row.arrAnswers = Object.keys(row.answers || {}).map(
+                questionUid => {
+                  return {
+                    ...row.answers[questionUid],
+                    userUid,
+                    quizUid,
+                    questionUid
+                  };
+                },
+                []
+              );
+
+              return row;
+            })
+        )
+      );
   }
 
   public getUserQuizAnswers(userUid: string, quizUid: string): Observable<any> {

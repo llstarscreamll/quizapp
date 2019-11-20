@@ -21,4 +21,8 @@ export class UserService {
       .get({ source: "server" })
       .pipe(map((ref: DocumentSnapshot<User>) => ref.data()));
   }
+
+  public getAll(): Observable<User[]> {
+    return this.db.collection<User>(`users`).valueChanges();
+  }
 }

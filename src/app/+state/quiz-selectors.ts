@@ -7,6 +7,21 @@ export const getSelected = createSelector(
   selectQuizStatue,
   (state: QuizState) => state.selected
 );
+export const getSelectedQuizUsersAnswersScoreMetric = createSelector(
+  selectQuizStatue,
+  (state: QuizState) =>
+    state.selected ? state.selected.usersAnswersScoreMetric() : null
+);
+export const getSelectedQuizAnsweredQuestionsMetric = createSelector(
+  selectQuizStatue,
+  (state: QuizState) =>
+    state.selected ? state.selected.selectedQuizAnsweredQuestionsMetric() : null
+);
+export const getSelectedQuizWrongAnswersMetric = createSelector(
+  selectQuizStatue,
+  (state: QuizState) =>
+    state.selected ? state.selected.wrongAnswersByUser() : null
+);
 export const getSelectedStatus = createSelector(
   selectQuizStatue,
   (state: QuizState) => state.selectedStatus

@@ -139,6 +139,7 @@ html {
 }
 
 h1,
+h3,
 h4,
 hr,
 p {
@@ -203,6 +204,7 @@ button,
 }
 
 h1,
+h3,
 h4 {
   font-size: inherit;
   font-weight: inherit;
@@ -228,7 +230,8 @@ code {
 
 img,
 svg,
-canvas {
+canvas,
+object {
   display: block;
   vertical-align: middle;
 }
@@ -320,12 +323,20 @@ img {
   background-color: #4299e1;
 }
 
+.border-gray-400 {
+  border-color: #cbd5e0;
+}
+
 .border-gray-600 {
   border-color: #718096;
 }
 
 .border-blue-700 {
   border-color: #2b6cb0;
+}
+
+.hover\:border-gray-500:hover {
+  border-color: #a0aec0;
 }
 
 .hover\:border-blue-500:hover {
@@ -640,6 +651,10 @@ img {
   padding-left: 1.25rem;
 }
 
+.pr-8 {
+  padding-right: 2rem;
+}
+
 .static {
   position: static;
 }
@@ -716,6 +731,14 @@ img {
   color: #3182ce;
 }
 
+.hover\:text-blue-800:hover {
+  color: #2c5282;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
 .text-sm {
   font-size: 0.875rem;
 }
@@ -732,8 +755,16 @@ img {
   font-size: 1.5rem;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .tracking-tight {
   letter-spacing: -0.025em;
+}
+
+.align-baseline {
+  vertical-align: baseline;
 }
 
 .w-4 {

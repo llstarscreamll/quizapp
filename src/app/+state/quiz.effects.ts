@@ -25,7 +25,8 @@ import {
   SetCurrentUserQuizQuestion,
   SetCurrentUserQuizQuestionSuccess,
   SetQuestionAnswer,
-  SetQuestionAnswerSuccess
+  SetQuestionAnswerSuccess,
+  GetWithMetrics
 } from "./quizzes.actions";
 
 @Injectable()
@@ -44,6 +45,16 @@ export class QuizEffects {
     switchMap((action: Get) =>
       this.quizService
         .get(action.payload)
+        .pipe(map(quiz => new GetSuccess(quiz)))
+    )
+  );
+
+  @Effect()
+  public getWithMetrics$ = this.actions$.pipe(
+    ofType(QuizActionTypes.GetWithMetrics),
+    switchMap((action: GetWithMetrics) =>
+      this.quizService
+        .getWithMetrics(action.payload)
         .pipe(map(quiz => new GetSuccess(quiz)))
     )
   );

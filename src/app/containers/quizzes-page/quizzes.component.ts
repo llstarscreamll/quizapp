@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { AuthFacade } from "src/app/+state/auth.facade";
-import { Papa } from "ngx-papaparse";
-import { QuizFacade } from "src/app/+state/quiz.facade";
-import { User } from "src/app/models/user";
-import { tap, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
+import { tap, takeUntil } from "rxjs/operators";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+
+import { User } from "src/app/models/user";
+import { QuizFacade } from "src/app/+state/quiz.facade";
+import { AuthFacade } from "src/app/+state/auth.facade";
+import { Quiz } from "src/app/models/quiz";
 
 @Component({
   selector: "app-quizzes",

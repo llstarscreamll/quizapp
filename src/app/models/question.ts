@@ -3,8 +3,8 @@ export class Question {
   author: string;
   skill: string;
   seniority: string;
-  time: string;
-  score: string;
+  time: number;
+  score: number;
   question: string;
   right_answer: string;
   wrong_answer_1: string;

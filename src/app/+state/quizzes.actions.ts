@@ -10,6 +10,7 @@ export enum QuizActionTypes {
   GetAllSuccess = "[Quiz] all success",
   GetAllError = "[Quiz] all error",
 
+  GetWithMetrics = "[Quiz] get with metrics",
   Get = "[Quiz] get",
   GetSuccess = "[Quiz] get success",
   GetError = "[Quiz] get error",
@@ -67,6 +68,11 @@ export class GetAllError implements Action {
 
 export class Get implements Action {
   public readonly type = QuizActionTypes.Get;
+  public constructor(public payload: string) {}
+}
+
+export class GetWithMetrics implements Action {
+  public readonly type = QuizActionTypes.GetWithMetrics;
   public constructor(public payload: string) {}
 }
 
@@ -216,6 +222,7 @@ export type QuizAction =
   | GetAll
   | GetAllSuccess
   | GetAllError
+  | GetWithMetrics
   | Get
   | GetSuccess
   | GetError
@@ -244,6 +251,7 @@ export const fromQuizActions = {
   GetAllSuccess,
   GetAllError,
   Get,
+  GetWithMetrics,
   GetSuccess,
   GetError,
   GetQuizAnswersFromUser,

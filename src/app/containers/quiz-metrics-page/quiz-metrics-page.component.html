@@ -1,0 +1,100 @@
+<h1 class="text-2xl font-bold text-gray-800 mb-5">
+  {{ (quiz$ | async)?.name }}
+</h1>
+
+<form [formGroup]="userForm" class="mb-5">
+  <select
+    formControlName="selectedUser"
+    multiple
+    class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+  >
+    <option [value]="userSelectLabel">Select user</option>
+    <option
+      *ngFor="let answer of (quiz$ | async)?.usersAnswers"
+      [value]="answer?.user?.email"
+    >
+      {{ answer?.user?.fullName }}
+    </option>
+  </select>
+  <p class="text-gray-600 text-xs italic text-right">
+    select user to generate radar chart
+  </p>
+</form>
+
+<ng-container *ngIf="seniorityMetricsByUser">
+  <div class="block">
+    <canvas
+      baseChart
+      [datasets]="seniorityMetricsByUser"
+      [options]="radarChartOptions"
+      [labels]="this.quiz.seniorities"
+      chartType="radar"
+    >
+    </canvas>
+  </div>
+</ng-container>
+
+<h3 class="text-center text-lg font-semibold text-gray-800">Total Score</h3>
+<div class="total-score-chart m-5 total-score-chart bg-white rounded w-3/3">
+  <ngx-charts-bar-horizontal
+    class="inline-block"
+    [scheme]="colorScheme"
+    [results]="usersAnswersScoreMetric$ | async"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [xScaleMax]="(quiz$ | async)?.totalScore()"
+  >
+  </ngx-charts-bar-horizontal>
+</div>
+
+<hr class="mb-5" />
+
+<h3 class="text-center text-lg font-semibold text-gray-800">
+  Answered Questions
+</h3>
+<div class="total-score-chart m-5 total-score-chart bg-white rounded w-3/3">
+  <ngx-charts-bar-horizontal
+    class="inline-block"
+    [scheme]="colorScheme"
+    [results]="answeredQuestionsMetric$ | async"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [xScaleMax]="(quiz$ | async)?.questions.length"
+  >
+  </ngx-charts-bar-horizontal>
+</div>
+
+<hr class="mb-5" />
+
+<h3 class="text-center text-lg font-semibold text-gray-800">
+  Wrong Answers
+</h3>
+<div class="total-score-chart m-5 total-score-chart bg-white rounded w-3/3">
+  <ngx-charts-bar-horizontal
+    class="inline-block"
+    [scheme]="colorScheme"
+    [results]="wrongAnswersMetric$ | async"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [xScaleMax]="(quiz$ | async)?.questions.length"
+  >
+  </ngx-charts-bar-horizontal>
+</div>

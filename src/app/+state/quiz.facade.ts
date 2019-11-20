@@ -8,7 +8,10 @@ import {
   getLoadedStatus,
   getError,
   getActiveQuizzes,
-  getUserQuizAnswers
+  getUserQuizAnswers,
+  getSelectedQuizUsersAnswersScoreMetric,
+  getSelectedQuizAnsweredQuestionsMetric,
+  getSelectedQuizWrongAnswersMetric
 } from "./quiz-selectors";
 import {
   GetAll,
@@ -22,7 +25,8 @@ import {
   GetQuizAnswersFromUser,
   SetLastUserQuizEntry,
   SetCurrentUserQuizQuestion,
-  SetQuestionAnswer
+  SetQuestionAnswer,
+  GetWithMetrics
 } from "./quizzes.actions";
 import { User } from "../models/user";
 import { Quiz } from "../models/quiz";
@@ -37,6 +41,15 @@ export class QuizFacade {
   public activeQuizzes$ = this.store.select(getActiveQuizzes);
   public selectedStatus$ = this.store.select(getSelectedStatus);
   public userQuizAnswers$ = this.store.select(getUserQuizAnswers);
+  public selectedQuizUsersAnswersScoreMetric$ = this.store.select(
+    getSelectedQuizUsersAnswersScoreMetric
+  );
+  public selectedQuizAnsweredQuestionsMetric$ = this.store.select(
+    getSelectedQuizAnsweredQuestionsMetric
+  );
+  public selectedQuizWrongAnswersMetric$ = this.store.select(
+    getSelectedQuizWrongAnswersMetric
+  );
 
   public constructor(private store: Store<any>) {}
 
@@ -50,6 +63,10 @@ export class QuizFacade {
 
   public get(quizId: string) {
     this.store.dispatch(new Get(quizId));
+  }
+
+  public getWithMetrics(quizId: string) {
+    this.store.dispatch(new GetWithMetrics(quizId));
   }
 
   public setQuizApplicant(quizUid, user) {

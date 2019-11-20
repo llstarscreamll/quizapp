@@ -32,6 +32,11 @@
     <div class="text-sm font-hairline text-gray-700">
       Applicants: {{ quiz.applicants.length }}
     </div>
+    <div class="text-sm">
+      <a [routerLink]="['/quizzes', quiz.uid, 'metrics']" class="text-blue-600">
+        See metrics
+      </a>
+    </div>
   </div>
 </div>
 
