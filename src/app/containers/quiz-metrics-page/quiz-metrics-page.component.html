@@ -34,6 +34,20 @@
   </div>
 </ng-container>
 
+<div class="text-center">
+  <div class="inline-block mb-5" *ngFor="let metric of skillsMetricsByUser">
+    <ngx-charts-pie-chart
+      [labels]="true"
+      [legend]="true"
+      legendTitle="Skills"
+      [results]="metric"
+      [view]="[1000, 700]"
+    >
+    </ngx-charts-pie-chart>
+  </div>
+</div>
+<div class="clearfix"></div>
+
 <h3 class="text-center text-lg font-semibold text-gray-800">Total Score</h3>
 <div class="total-score-chart m-5 total-score-chart bg-white rounded w-3/3">
   <ngx-charts-bar-horizontal

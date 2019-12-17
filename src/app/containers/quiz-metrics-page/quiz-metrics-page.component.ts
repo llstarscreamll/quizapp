@@ -44,6 +44,7 @@ export class QuizMetricsPageComponent implements OnInit, OnDestroy {
 
   public quiz;
   public seniorityMetricsByUser;
+  public skillsMetricsByUser;
   public userForm: FormGroup;
   public userSelectLabel = "Select user";
 
@@ -89,10 +90,15 @@ export class QuizMetricsPageComponent implements OnInit, OnDestroy {
           );
           if (!cleanValues.length) {
             this.seniorityMetricsByUser = null;
+            this.skillsMetricsByUser = null;
             return;
           }
 
           this.seniorityMetricsByUser = this.quiz.seniorityMetricsByUserEmails(
+            cleanValues
+          );
+
+          this.skillsMetricsByUser = this.quiz.skillsMetricsByUserEmails(
             cleanValues
           );
         }),

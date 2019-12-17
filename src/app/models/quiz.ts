@@ -1,7 +1,6 @@
 import { User } from "./user";
 import { Question } from "./question";
 import { UserQuizAnswers } from "./users-quiz-answers";
-import { filter } from "rxjs/operators";
 import { ChartDataSets } from "chart.js";
 
 export class Quiz {
@@ -14,6 +13,18 @@ export class Quiz {
   endsAt?: Date;
   createdBy?: User;
   user?: any;
+
+  senioritiesMap = {
+    junior: "Junior",
+    "junior 2": "Junior",
+    "backend developer": "Semisenior",
+    semisenior: "Semisenior",
+    "semi senior": "Semisenior",
+    senior: "Senior",
+    "senior 1": "Senior",
+    "senior 2": "Senior",
+    "tech lead": "Senior"
+  };
 
   public static fromJsonList(data: any[]): Quiz[] {
     return data.map(row => this.fromJson(row));
@@ -41,6 +52,7 @@ export class Quiz {
 
   public get seniorities(): string[] {
     return (this.questions || [])
+      .map(answer => this.mapAnswerSeniority(answer))
       .reduce((acc, question) => {
         acc.push(question.seniority.toLowerCase());
         return acc;
@@ -118,16 +130,21 @@ export class Quiz {
   }
 
   public seniorityMetricsByUserEmails(emails: string[]): ChartDataSets[] {
-    return emails.map(email => this.seniorityMetricsByUser(email));
+    return emails.map(email => this.seniorityMetricsByUserEmail(email));
   }
 
-  public seniorityMetricsByUser(userEmail: string): ChartDataSets {
+  public skillsMetricsByUserEmails(emails: string[]): any[] {
+    return emails.map(email => this.skillsMetricsByUserEmail(email));
+  }
+
+  public seniorityMetricsByUserEmail(userEmail: string): ChartDataSets {
     const userAnswers = this.usersAnswers.find(
       answer => answer.user.email === userEmail
     );
 
     let seniorityMetric = userAnswers.arrAnswers
       .filter(answer => answer.answerText !== "" && answer.question !== "")
+      .map(answer => this.mapAnswerSeniority(answer))
       .reduce((acc, answer) => {
         const seniority = answer.seniority.toLowerCase();
 
@@ -151,5 +168,47 @@ export class Quiz {
       );
 
     return { data: seniorityMetric as number[], label: userEmail };
+  }
+
+  public skillsMetricsByUserEmail(userEmail: string): { name; value }[] {
+    const userAnswers = this.usersAnswers.find(
+      answer => answer.user.email === userEmail
+    );
+
+    let metric = userAnswers.arrAnswers
+      .filter(answer => answer.answerText !== "" && answer.question !== "")
+      .map(answer => this.mapAnswerSeniority(answer))
+      .reduce((acc, answer) => {
+        const skill = answer.skill.toLowerCase();
+
+        if (!acc[skill]) {
+          acc[skill] = [];
+        }
+
+        // points owned by skill
+        acc[skill].push(answer.points);
+
+        return acc;
+      }, {});
+
+    metric = Object.keys(metric)
+      .sort()
+      .map(skillName => ({
+        name: skillName,
+        value: metric[skillName].reduce((acc, points) => (acc += points), 0)
+      }))
+      .sort(i => i.value);
+
+    return metric;
+  }
+
+  private mapAnswerSeniority(answer) {
+    Object.keys(this.senioritiesMap).forEach(key => {
+      if (answer.seniority.toLowerCase() === key.toLowerCase()) {
+        answer = { ...answer, seniority: this.senioritiesMap[key] };
+      }
+    });
+
+    return answer;
   }
 }

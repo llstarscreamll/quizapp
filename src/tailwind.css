@@ -4,6 +4,12 @@
 
 @tailwind utilities;
 
+.clearfix {
+  display: block;
+  content: "";
+  clear: both;
+}
+
 .answer-option markdown p {
   display: inline;
 }
